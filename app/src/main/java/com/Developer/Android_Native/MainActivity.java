@@ -8,7 +8,9 @@ import android.widget.TextView;
 import com.Developer.Android_Native.model.Comments;
 import com.Developer.Android_Native.model.DataModel;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,11 +35,49 @@ public class MainActivity extends AppCompatActivity {
 
       //getDataMOdel();
         //getCommentSData();
-         getMyQueryData();
+       //  getMyQueryData();
+        getMapDataByQuery();
 
     }
+    private void getMapDataByQuery(){
+        Map<String,String> parameters=new HashMap();
+        parameters.put("userId","2");
+        parameters.put("_order","desc");
+
+        Call<List<DataModel>> call =jsonPlaceHolder.getQueryMapData(parameters);
+        call.enqueue(new Callback<List<DataModel>>() {
+            @Override
+            public void onResponse(Call<List<DataModel>> call, Response<List<DataModel>> response) {
+                if(!response.isSuccessful()){
+                    textView.setText("code:" + response.code());
+                    return;
+                }
+
+                List<DataModel> dataModelList =response.body();
+                for(DataModel dataModel : dataModelList){
+                    String content=" ";
+                    content += "ID:" + dataModel.getId()+"\n";
+                    content += "userId:" + dataModel.getUserId()+"\n";
+                    content += "title:" + dataModel.getTitle()+"\n";
+                    content += "body:" + dataModel.getText()+"\n";
+                    content+="\n\n";
+                    textView.append(content);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<DataModel>> call, Throwable t) {
+                textView.setText(t.getMessage());
+
+            }
+        });
+
+    }
+
+
+
     private void getMyQueryData(){
-        Call<List<DataModel>> call =jsonPlaceHolder.getQueryData(4,"id","desc");
+        Call<List<DataModel>> call =jsonPlaceHolder.getQueryData(null,null,2,4,6);
         call.enqueue(new Callback<List<DataModel>>() {
             @Override
             public void onResponse(Call<List<DataModel>> call, Response<List<DataModel>> response) {
