@@ -32,9 +32,40 @@ public class MainActivity extends AppCompatActivity {
       jsonPlaceHolder = retrofit.create(JsonPlaceHolder.class);
 
       //getDataMOdel();
-        getCommentSData();
+        //getCommentSData();
+        getMyQueryData();
 
     }
+    private void getMyQueryData(){
+        Call<List<DataModel>> call =jsonPlaceHolder.getQueryData(4,"id","desc");
+        call.enqueue(new Callback<List<DataModel>>() {
+            @Override
+            public void onResponse(Call<List<DataModel>> call, Response<List<DataModel>> response) {
+                if(!response.isSuccessful()){
+                    textView.setText("code:" + response.code());
+                    return;
+                }
+                List<DataModel> dataModelList =response.body();
+                for(DataModel dataModel : dataModelList){
+                    String content=" ";
+                    content += "ID:" + dataModel.getId()+"\n";
+                    content += "userId:" + dataModel.getUserId()+"\n";
+                    content += "title:" + dataModel.getTitle()+"\n";
+                    content += "body:" + dataModel.getText()+"\n";
+                    content+="\n\n";
+                    textView.append(content);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<DataModel>> call, Throwable t) {
+                textView.setText(t.getMessage());
+
+            }
+        });
+
+    }
+
     private void getCommentSData(){
             Call<List<Comments>> call = jsonPlaceHolder.getCommentsData( 3);
             call.enqueue(new Callback<List<Comments>>() {
